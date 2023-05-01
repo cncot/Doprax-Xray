@@ -94,7 +94,7 @@ def print_node(node):
         # 对名称进行url解码并转换为字符串
         name = urllib.parse.unquote(node[5:].split(b"@")[1].split(b":")[1].split(b"#")[1]).decode()
         print(f"{protocol}://{password}@{address}:{port}#{name}")
-    # 如果是ssr节点，按照ssr://地址:端口:协议:加密方式:
+    
 
 
 
@@ -110,6 +110,7 @@ def print_node(node):
         # 对名称进行url解码并转换为字符串
         name = urllib.parse.unquote(node[6:].split(b":")[5].split(b"/?")[1].split(b"remarks=")[1]).decode()
         print(f"{protocol}://{address}:{port}:{protocol2}:{encryption}:{obfuscation}:{password}#{name}")
+        
     # 如果是vmess节点，按照vmess://地址:端口:id:额外id:加密方式:传输协议:伪装类型:伪装域名#名称的格式打印
     elif node.startswith(b"vmess://"):
         protocol = "vmess"
@@ -124,6 +125,7 @@ def print_node(node):
         # 对名称进行url解码并转换为字符串
         name = urllib.parse.unquote(node[8:].split(b"\"ps\": \"")[1].split(b"\"")[0]).decode()
         print(f"{protocol}://{address}:{port}:{id}:{aid}:{encryption}:{network}:{type}:{host}#{name}")
+        
     # 如果是trojan节点，按照trojan://密码@地址:端口#名称的格式打印
     elif node.startswith(b"trojan://"):
         protocol = "trojan"

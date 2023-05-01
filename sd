@@ -1,6 +1,47 @@
-# 导入requests库和base64库
+# 导入requests库和base64库和urllib库
 import requests
 import base64
+import urllib
+
+# 定义一个函数来解析订阅地址 https://raw.fastgit.org/Leon406/SubCrawler/master/sub/share/v2,
+#def parse_sub(url):
+   # 发送get请求获取订阅内容
+   # response = requests.get(url)
+    # 对内容进行base64解码
+    #content = base64.b64decode(response.text + "==")
+    # 按换行符分割内容
+   # lines = content.splitlines()
+    # 定义一个空列表来存储节点信息
+  #  nodes = []
+
+# 定义一个订阅地址，这里使用你提供的地址
+sub_url = "https://raw.fastgit.org/Leon406/SubCrawler/master/sub/share/v2"
+# 调用parse_sub函数解析订阅地址，得到节点列表
+nodes = parse_sub(sub_url)
+
+
+
+
+
+    # 遍历每一行内容
+    for line in lines:
+        # 如果是ss节点，直接添加到列表中
+        if line.startswith(b"ss://"):
+            nodes.append(line)
+        # 如果是ssr节点，对内容进行base64解码后添加到列表中
+        elif line.startswith(b"ssr://"):
+            nodes.append(base64.b64decode(line[6:] + "=="))
+        # 如果是vmess节点，对内容进行base64解码后添加到列表中
+        elif line.startswith(b"vmess://"):
+            nodes.append(base64.b64decode(line[8:] + "=="))
+        # 如果是trojan节点，直接添加到列表中
+        elif line.startswith(b"trojan://"):
+            nodes.append(line)
+        # 否则跳过该行
+        else:
+            continue
+    # 返回节点列表
+    return nodes
 
 # 定义一个函数来检测节点是否可用
 def check_node(node):
@@ -30,25 +71,22 @@ def check_node(node):
     except:
         return False
 
-# 定义一个订阅地址，这里使用你提供的地址
-sub_url = "https://raw.fastgit.org/Leon406/SubCrawler/master/sub/share/v2"
-# 调用parse_sub函数解析订阅地址，得到节点列表
-nodes = parse_sub(sub_url)
-# 遍历每个节点
-for node in nodes:
-    # 调
-    
-    
-    # 定义一个函数来打印节点信息
+# 定义一个函数来打印节点信息
 def print_node(node):
-    # 如果是ss节点，按照ss://协议:密码@地址:端口的格式打印
+    # 如果是ss节点，按照ss://协议:密码@地址:端口#名称的格式打印
     if node.startswith(b"ss://"):
         protocol = "ss"
         password = node[5:].split(b"@")[0]
         address = node[5:].split(b"@")[1].split(b":")[0]
-        port = node[5:].split(b"@")[1].split(b":")[1]
-        print(f"{protocol}://{password}@{address}:{port}")
-    # 如果是ssr节点，按照ssr://地址:端口:协议:加密方式:混淆方式:密码的格式打印
+        port = node[5:].split(b"@")[1].split(b":")[1].split(b"#")[0]
+        # 对名称进行url解码并转换为字符串
+        name = urllib.parse.unquote(node[5:].split(b"@")[1].split(b":")[1].split(b"#")[1]).decode()
+        print(f"{protocol}://{password}@{address}:{port}#{name}")
+    # 如果是ssr节点，按照ssr://地址:端口:协议:加密方式:
+
+
+
+# 如果是ssr节点，按照ssr://地址:端口:协议:加密方式:混淆方式:密码#名称的格式打印
     elif node.startswith(b"ssr://"):
         protocol = "ssr"
         address = node[6:].split(b":")[0]
@@ -57,8 +95,10 @@ def print_node(node):
         encryption = node[6:].split(b":")[3]
         obfuscation = node[6:].split(b":")[4]
         password = node[6:].split(b":")[5].split(b"/?")[0]
-        print(f"{protocol}://{address}:{port}:{protocol2}:{encryption}:{obfuscation}:{password}")
-    # 如果是vmess节点，按照vmess://地址:端口:id:额外id:加密方式:传输协议:伪装类型:伪装域名的格式打印
+        # 对名称进行url解码并转换为字符串
+        name = urllib.parse.unquote(node[6:].split(b":")[5].split(b"/?")[1].split(b"remarks=")[1]).decode()
+        print(f"{protocol}://{address}:{port}:{protocol2}:{encryption}:{obfuscation}:{password}#{name}")
+    # 如果是vmess节点，按照vmess://地址:端口:id:额外id:加密方式:传输协议:伪装类型:伪装域名#名称的格式打印
     elif node.startswith(b"vmess://"):
         protocol = "vmess"
         address = node[8:].split(b"\"add\": \"")[1].split(b"\"")[0]
@@ -69,14 +109,18 @@ def print_node(node):
         network = node[8:].split(b"\"net\": \"")[1].split(b"\"")[0]
         type = node[8:].split(b"\"type\": \"")[1].split(b"\"")[0]
         host = node[8:].split(b"\"host\": \"")[1].split(b"\"")[0]
-        print(f"{protocol}://{address}:{port}:{id}:{aid}:{encryption}:{network}:{type}:{host}")
-    # 如果是trojan节点，按照trojan://密码@地址:端口的格式打印
+        # 对名称进行url解码并转换为字符串
+        name = urllib.parse.unquote(node[8:].split(b"\"ps\": \"")[1].split(b"\"")[0]).decode()
+        print(f"{protocol}://{address}:{port}:{id}:{aid}:{encryption}:{network}:{type}:{host}#{name}")
+    # 如果是trojan节点，按照trojan://密码@地址:端口#名称的格式打印
     elif node.startswith(b"trojan://"):
         protocol = "trojan"
         password = node[9:].split(b"@")[0]
         address = node[9:].split(b"@")[1].split(b":")[0]
         port = node[9:].split(b"@")[1].split(b":")[1].split(b"?sni=")[0]
-        print(f"{protocol}://{password}@{address}:{port}")
+        # 对名称进行url解码并转换为字符串
+        name = urllib.parse.unquote(node[9:].split(b"@")[1].split(b":")[1].split(b"?sni=")[1]).decode()
+        print(f"{protocol}://{password}@{address}:{port}#{name}")
     # 否则不打印
     else:
         return
@@ -92,3 +136,12 @@ for node in nodes:
         print("Available")
     else:
         print("Unavailable")
+
+
+
+
+
+
+
+
+

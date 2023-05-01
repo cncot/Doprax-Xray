@@ -15,12 +15,24 @@ import urllib
   #  nodes = []
 
 # 定义一个订阅地址，这里使用你提供的地址
-sub_url = "https://raw.fastgit.org/Leon406/SubCrawler/master/sub/share/v2"
+#sub_url = "https://raw.fastgit.org/Leon406/SubCrawler/master/sub/share/v2"
 # 调用parse_sub函数解析订阅地址，得到节点列表
-nodes = parse_sub(sub_url)
+#nodes = parse_sub(sub_url)
 
 
+#定义一个订阅地址列表，这里使用你提供的两个地址
+sub_urls = [“https://raw.fastgit.org/Leon406/SubCrawler/master/sub/share/v2”, “https://raw.fastgit.org/Leon406/SubCrawler/master/sub/share/ss”]
 
+#遍历每个订阅地址
+for sub_url in sub_urls:
+# 调用parse_sub函数解析订阅地址，得到节点列表 
+nodes = parse_sub(sub_url) 
+# 遍历每个节点 
+for node in nodes: 
+# 调用check_node函数检测节点是否可用，返回布尔值 
+status = check_node(node) 
+# 调用print_node函数打印节点信息 
+print_node(node)
 
 
     # 遍历每一行内容

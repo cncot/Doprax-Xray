@@ -2,36 +2,6 @@
 import requests
 import base64
 
-# 定义一个函数来解析订阅地址
-def parse_sub(url):
-    # 发送get请求获取订阅内容
-    response = requests.get(url)
-    # 对内容进行base64解码
-    content = base64.b64decode(response.text + "==")
-    # 按换行符分割内容
-    lines = content.splitlines()
-    # 定义一个空列表来存储节点信息
-    nodes = []
-    # 遍历每一行内容
-    for line in lines:
-        # 如果是ss节点，直接添加到列表中
-        if line.startswith(b"ss://"):
-            nodes.append(line)
-        # 如果是ssr节点，对内容进行base64解码后添加到列表中
-        elif line.startswith(b"ssr://"):
-            nodes.append(base64.b64decode(line[6:] + "=="))
-        # 如果是vmess节点，对内容进行base64解码后添加到列表中
-        elif line.startswith(b"vmess://"):
-            nodes.append(base64.b64decode(line[8:] + "=="))
-        # 如果是trojan节点，直接添加到列表中
-        elif line.startswith(b"trojan://"):
-            nodes.append(line)
-        # 否则跳过该行
-        else:
-            continue
-    # 返回节点列表
-    return nodes
-
 # 定义一个函数来检测节点是否可用
 def check_node(node):
     # 定义一个目标网址，这里使用谷歌
